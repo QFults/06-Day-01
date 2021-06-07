@@ -13,23 +13,53 @@
   <h1>Hello World!</h1>
   <a href="/">Home Page</a>
   <a href="/contact.html">Contact Page</a>
+  <form>
+    <p>
+      <label for="name">name</label>
+      <input type="text" name="name" id="name">
+    </p>
+    <p>
+      <label for="email">email</label>
+      <input type="text" name="email" id="email">
+    </p>
+    <button id="addUser">Add User</button>
+  </form>
   <div id="users"></div>
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script>
 
-    axios.get('/users')
-      .then(({ data: users }) => {
-        users.forEach(user => {
-          let userElem = document.createElement('div')
-          userElem.innerHTML = `
+    const renderUsers = users => {
+      document.getElementById('users').innerHTML = ''
+      users.forEach(user => {
+        let userElem = document.createElement('div')
+        userElem.innerHTML = `
             <h1>${user.name}</h1>
             <h2>${user.email}</h2>
           `
-          document.getElementById('users').append(userElem)
-        })
+        document.getElementById('users').append(userElem)
       })
-      .catch(err => console.error(err))
+    }
 
+    document.getElementById('addUser').addEventListener('click', event => {
+      event.preventDefault()
+      axios.post('/users', {
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value
+      })
+        .then(({ data: users }) => {
+          renderUsers(users)
+          document.getElementById('name').value = ''
+          document.getElementById('email').value = ''
+        })
+    })
+
+    const getUsers = () => {
+      axios.get('/users')
+        .then(({ data: users }) => renderUsers(users))
+        .catch(err => console.error(err))
+    }
+
+    getUsers()
   </script>
 </body>
 

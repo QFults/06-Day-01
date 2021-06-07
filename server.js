@@ -1,11 +1,19 @@
+const users = require('./db/users.js')
 const express = require('express')
 const { join } = require('path')
-const users = require('./db/users.js')
 const app = express()
 
 app.use(express.static(join(__dirname, 'public')))
+app.use(express.urlencoded({ extended: true }))
+app.use(express.json())
 
 app.get('/users', (req, res) => {
+  res.json(users)
+})
+
+app.post('/users', (req, res) => {
+  users.push(req.body)
+  // res.sendStatus(200)
   res.json(users)
 })
 
