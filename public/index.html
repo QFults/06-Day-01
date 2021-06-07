@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+
+<body>
+  <h1>Hello World!</h1>
+  <a href="/">Home Page</a>
+  <a href="/contact.html">Contact Page</a>
+  <div id="users"></div>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <script>
+
+    axios.get('/users')
+      .then(({ data: users }) => {
+        users.forEach(user => {
+          let userElem = document.createElement('div')
+          userElem.innerHTML = `
+            <h1>${user.name}</h1>
+            <h2>${user.email}</h2>
+          `
+          document.getElementById('users').append(userElem)
+        })
+      })
+      .catch(err => console.error(err))
+
+  </script>
+</body>
+
+</html>
