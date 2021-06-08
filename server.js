@@ -1,6 +1,7 @@
-const users = require('./db/users.js')
+let users = require('./db/users.js')
 const express = require('express')
 const { join } = require('path')
+const { uid } = require('uid')
 const app = express()
 
 app.use(express.static(join(__dirname, 'public')))
@@ -12,8 +13,27 @@ app.get('/users', (req, res) => {
 })
 
 app.post('/users', (req, res) => {
-  users.push(req.body)
+  const user = {
+    id: uid(),
+    ...req.body
+  }
+  users.push(user)
   // res.sendStatus(200)
+  res.json(users)
+})
+
+app.put('/users/:id', (req, res) => {
+  users = users.map(user => {
+    if (user.id === req.params.id) {
+      user.email = req.body.email
+    }
+    return user
+  })
+  res.json(users)
+})
+
+app.delete('/users/:id', (req, res) => {
+  users = users.filter(user => user.id !== req.params.id)
   res.json(users)
 })
 

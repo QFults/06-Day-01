@@ -28,13 +28,26 @@
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   <script>
 
+    const getUsers = () => {
+      axios.get('/users')
+        .then(({ data: users }) => {
+          console.log(users)
+          renderUsers(users)
+        })
+        .catch(err => console.error(err))
+    }
+
     const renderUsers = users => {
       document.getElementById('users').innerHTML = ''
       users.forEach(user => {
         let userElem = document.createElement('div')
         userElem.innerHTML = `
             <h1>${user.name}</h1>
-            <h2>${user.email}</h2>
+            <form>
+            <input type="text" value="${user.email}" class="uEmail">
+            <button class="update" data-id="${user.id}">Update</button>
+            </form>
+            <button class="delete" data-id="${user.id}">x</button>
           `
         document.getElementById('users').append(userElem)
       })
@@ -53,11 +66,21 @@
         })
     })
 
-    const getUsers = () => {
-      axios.get('/users')
-        .then(({ data: users }) => renderUsers(users))
-        .catch(err => console.error(err))
-    }
+    document.addEventListener('click', event => {
+      if (event.target.className === 'update') {
+        event.preventDefault()
+        let email = event.target.previousElementSibling.value
+        let id = event.target.dataset.id
+        axios.put(`/users/${id}`, { email })
+          .then(({ data: users }) => renderUsers(users))
+          .catch(err => console.error(err))
+      } else if (event.target.className === 'delete') {
+        let id = event.target.dataset.id
+        axios.delete(`/users/${id}`)
+          .then(({ data: users }) => renderUsers(users))
+          .catch(err => console.error(err))
+      }
+    })
 
     getUsers()
   </script>
